@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
 class SalesforceDatabase
-  def self.add_donation(_request_data); end
+  def add_donation(_data); end
 end

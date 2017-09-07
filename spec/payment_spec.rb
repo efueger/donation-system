@@ -70,12 +70,11 @@ RSpec.describe Payment do
       end
 
       it 'adds the donation to the supporters database' do
-        allow(SalesforceDatabase).to receive(:add_donation)
-          .with(request)
+        database = instance_double(SalesforceDatabase).as_null_object
 
-        Payment.new(request).attempt
+        Payment.new(request, database).attempt
 
-        expect(SalesforceDatabase).to have_received(:add_donation)
+        expect(database).to have_received(:add_donation)
           .with(request)
       end
     end
