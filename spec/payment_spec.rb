@@ -47,11 +47,14 @@ RSpec.describe Payment do
     end
 
     context 'success' do
-      it 'succeeds with a valid api key and valid parameters' do
-        request = Request.new(
+      let(:request) do
+        Request.new(
           '1000', 'usd', '4242424242424242', '123', '2020', '01',
-          'irrelevant', 'irrelevant'
+          'user@example.com', 'Name'
         )
+      end
+
+      it 'succeeds with a valid api key and valid parameters' do
         payment = Payment.new(request)
         expect(payment.attempt).to eq([])
       end
@@ -60,10 +63,6 @@ RSpec.describe Payment do
         allow(ThankYouMailer).to receive(:send_email)
           .with('user@example.com', 'Name')
 
-        request = Request.new(
-          '1000', 'usd', '4242424242424242', '123', '2020', '01',
-          'user@example.com', 'Name'
-        )
         Payment.new(request).attempt
 
         expect(ThankYouMailer).to have_received(:send_email)
@@ -71,10 +70,6 @@ RSpec.describe Payment do
       end
 
       it 'adds the donation to the supporters database' do
-        request = Request.new(
-          '1000', 'usd', '4242424242424242', '123', '2020', '01',
-          'user@example.com', 'Name'
-        )
         allow(SalesforceDatabase).to receive(:add_donation)
           .with(request)
 
