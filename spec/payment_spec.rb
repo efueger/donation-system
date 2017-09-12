@@ -14,7 +14,8 @@ RSpec.describe Payment do
   )
 
   let(:request) { Request.new(nil) }
-  let(:payment) { Payment.new(request) }
+  let(:database) { instance_double(SalesforceDatabase).as_null_object }
+  let(:payment) { Payment.new(request, database) }
 
   it 'stores the request object passed in the initializer' do
     expect(payment.request).to eq request
@@ -42,7 +43,7 @@ RSpec.describe Payment do
         '1000', 'usd', '1235424242424242', '123', '2020', '01',
         'irrelevant', 'irrelevant'
       )
-      payment = Payment.new(request)
+      payment = Payment.new(request, database)
       expect(payment.attempt).to eq([:card_error])
     end
 
@@ -55,7 +56,7 @@ RSpec.describe Payment do
       end
 
       it 'succeeds with a valid api key and valid parameters' do
-        payment = Payment.new(request)
+        payment = Payment.new(request, database)
         expect(payment.attempt).to eq([])
       end
 
@@ -63,15 +64,13 @@ RSpec.describe Payment do
         allow(ThankYouMailer).to receive(:send_email)
           .with('user@example.com', 'Name')
 
-        Payment.new(request).attempt
+        Payment.new(request, database).attempt
 
         expect(ThankYouMailer).to have_received(:send_email)
           .with('user@example.com', 'Name')
       end
 
       it 'adds the donation to the supporters database' do
-        database = instance_double(SalesforceDatabase).as_null_object
-
         Payment.new(request, database).attempt
 
         expect(database).to have_received(:add_donation)
