@@ -2,6 +2,7 @@
 
 require 'net/http'
 require 'net/https'
+require 'salesforce_database'
 require 'thank_you_mailer'
 
 class Payment
@@ -15,6 +16,7 @@ class Payment
     response = post('https://api.stripe.com/v1/charges')
     if response.code == '200'
       ThankYouMailer.send_email(request.email, request.name)
+      SalesforceDatabase.add_donation(request)
       []
     elsif response.code == '402'
       [:card_error]

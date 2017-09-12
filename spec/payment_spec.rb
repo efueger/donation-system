@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
-require 'support/with_env'
-require 'spec_helper'
 require 'payment'
+require 'salesforce_database'
+require 'spec_helper'
+require 'support/with_env'
 require 'thank_you_mailer'
 
 RSpec.describe Payment do
@@ -67,6 +68,20 @@ RSpec.describe Payment do
 
         expect(ThankYouMailer).to have_received(:send_email)
           .with('user@example.com', 'Name')
+      end
+
+      it 'adds the donation to the supporters database' do
+        request = Request.new(
+          '1000', 'usd', '4242424242424242', '123', '2020', '01',
+          'user@example.com', 'Name'
+        )
+        allow(SalesforceDatabase).to receive(:add_donation)
+          .with(request)
+
+        Payment.new(request).attempt
+
+        expect(SalesforceDatabase).to have_received(:add_donation)
+          .with(request)
       end
     end
   end
