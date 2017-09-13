@@ -7,4 +7,5 @@ RuboCop::RakeTask.new
 RSpec::Core::RakeTask.new(:spec)
 
 task(:default).clear
-task default: %i[spec rubocop]
+task :env_test { sh('. credentials/.env_test') }
+task default: %i[env_test spec rubocop]
