@@ -3,11 +3,11 @@
 require 'salesforce/donation_data'
 require 'spec_helper'
 
-RawData = Struct.new(:amount, :account_id)
+RawDonationData = Struct.new(:amount, :account_id)
 
 module Salesforce
   RSpec.describe DonationData do
-    let(:data) { RawData.new('20', '1') }
+    let(:data) { RawDonationData.new('20', '1') }
     let(:donation_data) { described_class.new(data) }
 
     it 'knows its table name' do
@@ -40,21 +40,21 @@ module Salesforce
 
     describe 'validations' do
       it 'handles missing amount' do
-        data = RawData.new(nil, '1')
+        data = RawDonationData.new(nil, '1')
         donation_data = described_class.new(data)
         expect(donation_data.fields).to be_nil
         expect(donation_data.errors).to include(:invalid_amount)
       end
 
       it 'handles invalid amount' do
-        data = RawData.new('asdf', '1')
+        data = RawDonationData.new('asdf', '1')
         donation_data = described_class.new(data)
         expect(donation_data.fields).to be_nil
         expect(donation_data.errors).to include(:invalid_amount)
       end
 
       it 'handles invalid account id' do
-        data = RawData.new('20', nil)
+        data = RawDonationData.new('20', nil)
         donation_data = described_class.new(data)
         expect(donation_data.fields).to be_nil
         expect(donation_data.errors).to include(:invalid_account_id)
