@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'restforce'
+require 'salesforce/donation_data'
 
 class SalesforceDatabase
   def initialize(client = Restforce.new)
@@ -29,10 +30,12 @@ class SalesforceDatabase
     search(search_supporter_by_id_query(supporter_id)).first
   end
 
+  RawDonationData = Struct.new(:amount, :account_id)
   def create_donation(data, supporter)
-    attributes = salesforce_donation_required_fields(data)
-                 .merge(donation_required_fields(supporter))
-    create('Opportunity', attributes)
+    data = RawDonationData.new(data.amount, supporter['AccountId'])
+    sobject_name = Salesforce::DonationData::TABLE_NAME
+    sobject_fields = Salesforce::DonationData.new(data).fields
+    create(sobject_name, sobject_fields)
   end
 
   private
@@ -65,19 +68,6 @@ class SalesforceDatabase
       from Contact
       where Id='#{id}'
     ).gsub(/\s+/, ' ').strip
-  end
-
-  def salesforce_donation_required_fields(data)
-    {
-      Amount: data.amount.to_s,
-      CloseDate: '2017-09-11',
-      Name: 'Online donation',
-      StageName: 'Received'
-    }
-  end
-
-  def donation_required_fields(supporter)
-    { AccountId: supporter['AccountId'] }
   end
 
   def salesforce_supporter_required_fields(data)

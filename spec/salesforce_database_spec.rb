@@ -37,11 +37,11 @@ RSpec.describe SalesforceDatabase do
 
       expect(client_mock).to have_received(:create!).with(
         'Opportunity',
-        AccountId: '0013D00000LBYutQAH',
         Amount: '20',
         CloseDate: '2017-09-11',
         Name: 'Online donation',
-        StageName: 'Received'
+        StageName: 'Received',
+        AccountId: '0013D00000LBYutQAH'
       )
     end
 
