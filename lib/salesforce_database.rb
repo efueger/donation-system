@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'restforce'
-require 'salesforce/donation_data'
+require 'salesforce/donation'
 require 'salesforce/supporter_data'
 
 class SalesforceDatabase
@@ -11,7 +11,7 @@ class SalesforceDatabase
 
   def add_donation(data)
     supporter = ensure_supporter(data)
-    donation_id = create_donation(data, supporter)
+    donation_id = donation.create(data, supporter)
     [] if donation_id
   end
 
@@ -29,12 +29,6 @@ class SalesforceDatabase
     find(Salesforce::SupporterData::TABLE_NAME, supporter_id)
   end
 
-  def create_donation(data, supporter)
-    sobject_name = Salesforce::DonationData::TABLE_NAME
-    sobject_fields = Salesforce::DonationData.new(data, supporter).fields
-    create(sobject_name, sobject_fields)
-  end
-
   private
 
   attr_reader :client
@@ -49,6 +43,10 @@ class SalesforceDatabase
 
   def find(sobject_name, id)
     client.find(sobject_name, id)
+  end
+
+  def donation
+    Salesforce::Donation.new(client)
   end
 
   def ensure_supporter(data)
