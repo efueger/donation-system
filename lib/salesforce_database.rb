@@ -29,11 +29,9 @@ class SalesforceDatabase
     find(Salesforce::SupporterData::TABLE_NAME, supporter_id)
   end
 
-  RawDonationData = Struct.new(:amount, :account_id)
   def create_donation(data, supporter)
-    data = RawDonationData.new(data.amount, supporter['AccountId'])
     sobject_name = Salesforce::DonationData::TABLE_NAME
-    sobject_fields = Salesforce::DonationData.new(data).fields
+    sobject_fields = Salesforce::DonationData.new(data, supporter).fields
     create(sobject_name, sobject_fields)
   end
 
@@ -58,7 +56,7 @@ class SalesforceDatabase
   end
 
   def select_first_entered_supporter(supporters)
-    supporters.sort_by { |contact| contact['First_entered__c'] }.first
+    supporters.sort_by { |contact| contact[:First_entered__c] }.first
   end
 
   def search_supporter_by_query(field, value)

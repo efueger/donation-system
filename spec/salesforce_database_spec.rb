@@ -6,7 +6,7 @@ require 'spec_helper'
 SalesforceData = Struct.new(:amount, :email, :name)
 
 RSpec.describe SalesforceDatabase do
-  describe 'supporter exists', vcr: { record: :all } do
+  describe 'supporter exists', vcr: { record: :once } do
     let(:client) { Restforce.new(host: 'cs70.salesforce.com') }
     let(:database) { SalesforceDatabase.new(client) }
 
@@ -26,7 +26,7 @@ RSpec.describe SalesforceDatabase do
     end
   end
 
-  describe 'supporter does not exist', vcr: { record: :all } do
+  describe 'supporter does not exist', vcr: { record: :once } do
     let(:client) { Restforce.new(host: 'cs70.salesforce.com') }
     let(:database) { SalesforceDatabase.new(client) }
 

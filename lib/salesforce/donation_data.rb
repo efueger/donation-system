@@ -4,8 +4,9 @@ module Salesforce
   class DonationData
     TABLE_NAME = 'Opportunity'
 
-    def initialize(data)
+    def initialize(data, supporter)
       @data = data
+      @supporter = supporter
     end
 
     def fields
@@ -15,7 +16,7 @@ module Salesforce
         CloseDate: '2017-09-11',
         Name: 'Online donation',
         StageName: 'Received',
-        AccountId: data.account_id
+        AccountId: supporter[:AccountId]
       }
     end
 
@@ -28,7 +29,7 @@ module Salesforce
 
     private
 
-    attr_reader :data
+    attr_reader :data, :supporter
 
     def valid_data?
       errors.empty?
@@ -39,7 +40,7 @@ module Salesforce
     end
 
     def validate_account_id
-      :invalid_account_id unless data.account_id
+      :invalid_account_id unless supporter && supporter[:AccountId]
     end
   end
 end

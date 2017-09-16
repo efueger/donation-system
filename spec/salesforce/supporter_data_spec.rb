@@ -3,10 +3,10 @@
 require 'salesforce/supporter_data'
 require 'spec_helper'
 
-RawSupporterData = Struct.new(:name, :email)
-
 module Salesforce
   RSpec.describe SupporterData do
+    RawSupporterData = Struct.new(:name, :email)
+
     let(:data) { RawSupporterData.new('A Name', 'test@test.com') }
     let(:supporter_data) { described_class.new(data) }
 
